@@ -1,5 +1,7 @@
 <?php
 
+namespace Anura\DataDrivenTables;
+
 class MySQL {
 
     public $MySQLiObj;
@@ -8,7 +10,7 @@ class MySQL {
     public function __construct($server, $user, $password, $db, $port = "3306") {
         $this->MySQLiObj = new \mysqli($server, $user, $password, $db, $port);
         if ($this->MySQLiObj->connect_errno) {
-            $this->error(array("code" => "MY_CONNECT_".$this->MySQLiObj->connect_errno, "msg" => "Could not connect to MySQL Server:<br />".$this->MySQLiObj->connect_error));
+            $this->error(array("code" => "MY_CONNECT_" . $this->MySQLiObj->connect_errno, "msg" => "Could not connect to MySQL Server:<br />" . $this->MySQLiObj->connect_error));
             $this->state = false;
             return;
         }
@@ -16,13 +18,13 @@ class MySQL {
         $this->state = true;
     }
 
-
     private function error($error) {
         var_dump($error);
     }
 
     public function __destruct() {
-        if (!$this->state) return;
+        if (!$this->state)
+            return;
         $this->MySQLiObj->close();
     }
 
@@ -44,7 +46,7 @@ class MySQL {
     }
 
     public function printLastSQLError() {
-        $this->error(array("code" => "MY_QUERY_".$this->MySQLiObj->errno, "msg" => $this->MySQLiObj->error));
+        $this->error(array("code" => "MY_QUERY_" . $this->MySQLiObj->errno, "msg" => $this->MySQLiObj->error));
     }
 
     public function lastSQLError() {
@@ -66,4 +68,5 @@ class MySQL {
             return $array;
         }
     }
+
 }
