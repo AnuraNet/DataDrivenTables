@@ -1,0 +1,22 @@
+{
+    "name": "anura/data-driven-tables",
+    "description": "Simple to use PHP library to generate designed HTML tables from MySQL data.",
+    "authors": [
+        {
+            "name": "Niklas Merkelt",
+            "email": "niklasmerkelt@mail.de"
+        },
+        {
+            "name": "Nico Borgsmüller",
+            "email": "kaenganxt@mc-anura.de"
+        }
+    ],
+    "require": {
+        "tecnickcom/tcpdf": "6.2.13"
+    },
+    "autoload": {
+        "psr-4" : {
+            "Anura\\DataDrivenTables\\" : "src"
+        }
+    }
+}

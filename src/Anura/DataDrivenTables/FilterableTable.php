@@ -2,8 +2,6 @@
 
 namespace Anura\DataDrivenTables;
 
-require_once 'SortableTable.php';
-
 const TEXT_FIELD = 0;
 const CHECK_BOX = 1;
 const RADIO_BUTTON = 2;

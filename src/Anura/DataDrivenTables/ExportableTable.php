@@ -2,8 +2,6 @@
 
 namespace Anura\DataDrivenTables;
 
-require_once 'FilterableTable.php';
-
 define('FPDF_FONTPATH', 'fpdf/font/');
 define('FPDF_INSTALLDIR', 'fpdf/');
 include(FPDF_INSTALLDIR . 'fpdf.php');

@@ -2,8 +2,6 @@
 
 namespace Anura\DataDrivenTables;
 
-require_once 'Table.php';
-
 abstract class SortableTable extends Table {
 
     protected $sortables = NULL;
