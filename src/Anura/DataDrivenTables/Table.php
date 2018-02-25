@@ -4,26 +4,33 @@ namespace Anura\DataDrivenTables;
 
 abstract class Table {
 
-    static $jsprinted = false;
+    private static $jsprinted = false;
+
+    protected $id;
+    protected $sqlQuery;
     protected $sqlArray;
     protected $nameArray;
-    protected $sqlQuery;
+    protected $emptyMsg;
+    protected $rowsPerPage;
+    protected $type;
+
     protected $action;
     protected $actionKey = "id";
-    protected $sqlKey;
-    protected $rowsPerPage = -1;
-    public $id;
-    protected $emptyMsg;
-    protected $type = "";
-    public $additionalScriptParameters = array();
+    protected $additionalScriptParameters = array();
 
-    public function __construct($id, $sqlQuery, $sqlArray, $nameArray, $emptyMsg) {
+    private $rowCount;
+
+    public function __construct($id, $sqlQuery, $sqlArray, $nameArray, $emptyMsg, $rowsPerPage = -1, $type = "") {
+        $this->id = $id;
         $this->sqlQuery = $sqlQuery;
         $this->sqlArray = $sqlArray;
         $this->nameArray = $nameArray;
-        $this->action = method_exists($this, "printAction");
         $this->emptyMsg = $emptyMsg;
-        $this->id = $id;
+        $this->rowsPerPage = $rowsPerPage;
+        $this->type = $type;
+
+        $this->action = method_exists($this, "printAction");
+
         if ($this->rowsPerPage !== -1) {
             $this->checkAjax();
         }
@@ -36,10 +43,10 @@ abstract class Table {
                 <tr>
                     <?php
                     foreach ($this->nameArray as $key => $column) {
-                        echo "<th data-id='{$this->sqlArray[$key]}'><div>{$column}</div></th>";
+                        echo "<th data-id='{$this->sqlArray[$key]}'><div>{$column}</div></th>\n";
                     }
                     if ($this->action === true) {
-                        echo "<th></th>";
+                        echo "<th></th>\n";
                     }
                     ?>
                 </tr>
@@ -50,8 +57,8 @@ abstract class Table {
                 ?>
             </tbody>
         </table>
-        <br/>
-        <div class='tableSwitcher' id='tableSwitcher<?php echo $this->id; ?>' data-id='<?php echo $this->id; ?>'></div>
+        <br />
+        <div class="tableSwitcher" data-id="<?php echo $this->id; ?>"></div>
         <?php
         if ($this->rowsPerPage !== -1) {
             $this->printScript();
@@ -59,72 +66,22 @@ abstract class Table {
     }
 
     protected function printTableData() {
-        return " data-page='1' data-additional-parameters='" . json_encode($this->additionalScriptParameters) . "' data-content-page='//{$_SERVER['HTTP_HOST']}{$_SERVER['PHP_SELF']}' ";
+        return " data-page='1' data-additional-parameters='" . json_encode($this->additionalScriptParameters) . "' data-content-page='//" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "' ";
     }
 
     protected function printScript() {
-        global $DB;
         $pages = 0;
-        $rows = count($DB->query($this->sqlQuery()));
-        if ($rows != 0) {
-            $pages = ceil($rows / $this->rowsPerPage);
+        if ($this->rowCount != 0) {
+            $pages = ceil($this->rowCount / $this->rowsPerPage);
         }
         if (!Table::$jsprinted) {
             ?>
             <script>
-                var timestamps = Array;
-                function updateTable(id, pagenr) {
-                var timestamp = Date.now();
-                timestamps[id] = timestamp;
-                var e = document.getElementById(id);
-                if (typeof pagenr === "undefined") {
-                pagenr = e.dataset.page;
-                }
-                var additionalParameters = "";
-                var obj = JSON.parse(e.dataset.additionalParameters);
-                for (var key in obj) {
-                additionalParameters += "&"+key+"="+obj[key];
-                }
-                ajax(e.dataset.contentPage+"?"+id+"&tablePage="+pagenr+additionalParameters, function(data) {
-                if (timestamps[id] === timestamp) {
-                e.getElementsByTagName('tbody')[0].innerHTML = data.html;
-                updateSwitcher(id,parseInt(pagenr),parseInt(data.pages));
-                e.dataset.id = pagenr;
-                }
-                }, "GET", "", true, function() {});
-                }
-                function updateSwitcher(id, page, pages) {
-                var html = "";
-                if (pages > 1) {
-                if (page - 1 > 0) {
-                html += "<a data-page='1'>&lt;&lt;</a>&nbsp;<a data-page='"+(page - 1)+"'>&lt; Vorherige Seite</a>&nbsp;|";
-                }
-                for (var i = page - 5;i <= page + 5;i++) {
-                if (i > 0 && i <= pages) {
-                if (i === page) {
-                html += "&nbsp;"+i+"&nbsp;";
-                } else {
-                html += "&nbsp;<a data-page='"+i+"'>"+i+"</a>&nbsp;";
-                }
-                }
-                }
-                if (page + 1 <= pages) {
-                html += "|&nbsp;<a data-page='"+(page + 1)+"'>Nächste Seite &gt;</a>&nbsp;<a data-page='"+pages+"'>&gt;&gt;</a>";
-                }
-                html += "<br/>"+pages+" Seiten";
-                }
-                document.getElementById("tableSwitcher"+id).innerHTML = html;
-                }
-                document.addEventListener("click", function(ev) {
-                var thiz = ev.target;
-                if (thiz.tagName.toLowerCase() === "a" && thiz.parentElement.classList.contains("tableSwitcher")) {
-                updateTable(thiz.parentElement.dataset.id, thiz.dataset.page);
-                }
-                });
+                <?php require "ressources/Table.js"; ?>
             </script>
         <?php } ?>
         <script>
-            updateSwitcher("<?php echo $this->id; ?>",1,<?php echo $pages; ?>);
+            updateSwitcher("<?php echo $this->id; ?>", 1, <?php echo $pages; ?>);
         </script>
         <?php
         Table::$jsprinted = true;
@@ -137,43 +94,46 @@ abstract class Table {
     protected function printContent($page = 1, $ajax = false) {
         global $DB;
         $sql = $this->sqlQuery();
+
+        $this->rowCount = count($DB->query($sql));
+
         if ($this->rowsPerPage !== -1) {
             $sql .= " LIMIT " . ($this->rowsPerPage * ($page - 1)) . ", " . $this->rowsPerPage;
         }
         $answer = $DB->query($sql);
         $pages = 0;
-        $query = substr($this->sqlQuery(), strpos($this->sqlQuery(), "FROM"));
-        $query = "SELECT COUNT(*) as count " . substr($query, 0, strpos($query, "ORDER BY"));
-        $rows = $DB->query($query)[0]['count'];
-        if ($rows != 0) {
-            $pages = ceil($rows / $this->rowsPerPage);
+
+        if ($this->rowCount != 0) {
+            $pages = ceil($this->rowCount / $this->rowsPerPage);
         }
+
         $html = "";
         if (!empty($answer)) {
             foreach ($answer as $key => $row) {
-                $html .= "<tr>";
+                $html .= "<tr>\n";
                 foreach ($this->sqlArray as $column) {
                     if (method_exists($this, $column)) {
-                        $html .= "<td>" . call_user_func(array($this, $column), $row[$column], $row, $key, $page, $rows) . "</td>";
+                        $html .= "<td>" . call_user_func(array($this, $column), $row[$column], $row, $key, $page, $this->rowCount) . "</td>";
                     } else if (strpos($column, "timestamp") !== false || strpos($column, "Timestamp") !== false) {
                         $html .= "<td>" . date("d.m.Y H:i", $row[$column]) . "</td>";
                     } else {
                         $html .= "<td>{$row[$column]}</td>";
                     }
+                    $html .= "\n";
                 }
                 if ($this->action === true) {
-                    $html .= "<td>{$this->printAction($row[$this->actionKey], $row, $rows)}</td>";
+                    $html .= "<td>{$this->printAction($row[$this->actionKey], $row, $this->rowCount)}</td>\n";
                 }
-                $html .= "</tr>";
+                $html .= "</tr>\n";
             }
         } else {
             $html .= "<tr>";
             $length = $this->action === true ? count($this->sqlArray) + 1 : count($this->sqlArray);
-            $html .= "<td colspan='$length'><center>{$this->emptyMsg}</center></td>";
+            $html .= "<td colspan='{$length}'><center>{$this->emptyMsg}</center></td>";
             $html .= "</tr>";
         }
         if ($ajax) {
-            header('Content-Type: application/json');
+            header("Content-Type: application/json");
             echo json_encode(array("html" => $html, "pages" => $pages));
         } else {
             echo $html;
@@ -182,9 +142,8 @@ abstract class Table {
 
     protected function checkAjax() {
         if (filter_has_var(INPUT_GET, $this->id)) {
-            $this->printContent(filter_input(INPUT_GET, 'tablePage'), true);
-            exit();
+            $this->printContent(filter_input(INPUT_GET, "tablePage"), true);
+            exit;
         }
     }
-
 }
