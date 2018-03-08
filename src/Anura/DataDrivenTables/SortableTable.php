@@ -10,7 +10,7 @@ class SortableTable extends Table {
     protected $sortBy;
     protected $sortDir;
 
-    public function __construct($id, $db, $sqlQuery, $sqlArray, $nameArray, $emptyMsg, $rowsPerPage = -1, $type = "") {
+    public function __construct($id, $db, $sqlQuery, $sqlArray, $nameArray, $emptyMsg = "", $rowsPerPage = -1, $type = "") {
         $this->sortBy = $this->sortByDefault;
         $this->sortDir = $this->sortDirDefault;
 

@@ -17,24 +17,27 @@ class Table {
     protected $type;
 
     protected $actionKey = "id";
+    protected $timestampFormat = "d.m.Y H:i";
+    protected $countQueryTemplate = "SELECT COUNT(*) as rowCount FROM ($1) count";
+    protected $countArgs = NULL;
     protected $additionalScriptParameters = array();
     protected $needsAjax = false;
 
-    private $rawSql;
+    private $rawSqlQuery;
     private $rawSqlArgs;
 
     private $rowCount;
     private $action;
 
-    public function __construct($id, $db, $sqlQuery, $sqlArray, $nameArray, $emptyMsg, $rowsPerPage = -1, $type = "") {
+    public function __construct($id, $db, $sqlQuery, $sqlArray, $nameArray, $emptyMsg = "", $rowsPerPage = -1, $type = "") {
         $this->id = $id;
         $this->db = $db;
 
         if (is_array($sqlQuery)) {
-            $this->rawSql = $sqlQuery["query"];
+            $this->rawSqlQuery = $sqlQuery["query"];
             $this->rawSqlArgs = $sqlQuery["args"];
         } else {
-            $this->rawSql = $sqlQuery;
+            $this->rawSqlQuery = $sqlQuery;
         }
 
         $this->sqlArray = $sqlArray;
@@ -94,12 +97,12 @@ class Table {
             $pages = ceil($this->rowCount / $this->rowsPerPage);
         }
         if (!Table::$jsprinted) {
-            ?>
-            <script>
-                <?php require "ressources/Table.js"; ?>
+        ?>
+            <script type="text/javascript">
+            <?php require "resources/Table.js"; ?>
             </script>
         <?php } ?>
-        <script>
+        <script type="text/javascript">
             updateSwitcher("<?php echo $this->id; ?>", 1, <?php echo $pages; ?>);
         </script>
         <?php
@@ -107,7 +110,7 @@ class Table {
     }
 
     protected function buildSqlQuery() {
-        $this->sqlQuery = $this->rawSql;
+        $this->sqlQuery = $this->rawSqlQuery;
         $this->sqlArgs = $this->rawSqlArgs;
     }
 
@@ -118,7 +121,9 @@ class Table {
 
         $this->buildSqlQuery();
 
-        $this->rowCount = count($this->db->query($this->sqlQuery, $this->sqlArgs));
+        $countQuery = str_replace("$1", $this->sqlQuery, $this->countQueryTemplate);
+
+        $this->rowCount = $this->db->query($countQuery, $this->sqlArgs)[0]["rowCount"];
 
         if ($this->rowsPerPage !== -1) {
             $this->sqlQuery .= " LIMIT ?, ?";
@@ -138,14 +143,15 @@ class Table {
             foreach ($answer as $key => $row) {
                 $html .= "<tr>\n";
                 foreach ($this->sqlArray as $column) {
+                    $html .= "<td>";
                     if (method_exists($this, $column)) {
-                        $html .= "<td>" . call_user_func(array($this, $column), $row[$column], $row, $key, $page, $this->rowCount) . "</td>";
-                    } else if (strpos($column, "timestamp") !== false || strpos($column, "Timestamp") !== false) {
-                        $html .= "<td>" . date("d.m.Y H:i", $row[$column]) . "</td>";
+                        $html .= call_user_func(array($this, $column), $row[$column], $row, $key, $page, $this->rowCount);
+                    } else if ($this->timestampFormat !== NULL && strpos(strtolower($column), "timestamp") !== false) {
+                        $html .= date($this->timestampFormat, $row[$column]);
                     } else {
-                        $html .= "<td>{$row[$column]}</td>";
+                        $html .= $row[$column];
                     }
-                    $html .= "\n";
+                    $html .= "</td>\n";
                 }
                 if ($this->action === true) {
                     $html .= "<td>{$this->printAction($row[$this->actionKey], $row, $this->rowCount)}</td>\n";
@@ -171,5 +177,31 @@ class Table {
             $this->printContent(filter_input(INPUT_GET, "tablePage"), true);
             exit;
         }
+    }
+
+    protected function setActionKey($actionKey) {
+        $this->actionKey = $actionKey;
+    }
+
+    protected function setTimestampFormat($timestamp) {
+        $this->timestampFormat = $timestamp;
+    }
+
+    protected function setCountQueryTemplate($templateQuery, $templateArgs = NULL) {
+        $this->countQueryTemplate = $templateQuery;
+
+        if ($templateArgs === NULL) {
+            if (strpos($templateQuery, "$1") !== false) {
+                $this->countArgs = $this->rawSqlArgs;
+            } else {
+                $this->countArgs = array();
+            }
+        } else {
+            $this->countArgs = $templateArgs;
+        }
+    }
+
+    protected function addAdditionalScriptParameter($key, $value) {
+        $this->additionalScriptParameters[$key] = $value;
     }
 }
