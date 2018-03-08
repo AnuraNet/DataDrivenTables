@@ -2,27 +2,41 @@
 
 namespace Anura\DataDrivenTables;
 
-abstract class Table {
+class Table {
 
     private static $jsprinted = false;
 
     protected $id;
+    protected $db;
     protected $sqlQuery;
+    protected $sqlArgs = array();
     protected $sqlArray;
     protected $nameArray;
     protected $emptyMsg;
     protected $rowsPerPage;
     protected $type;
 
-    protected $action;
     protected $actionKey = "id";
     protected $additionalScriptParameters = array();
+    protected $needsAjax = false;
+
+    private $rawSql;
+    private $rawSqlArgs;
 
     private $rowCount;
+    private $action;
 
-    public function __construct($id, $sqlQuery, $sqlArray, $nameArray, $emptyMsg, $rowsPerPage = -1, $type = "") {
+    public function __construct($id, $db, $sqlQuery, $sqlArray, $nameArray, $emptyMsg, $rowsPerPage = -1, $type = "") {
         $this->id = $id;
-        $this->sqlQuery = $sqlQuery;
+        $this->db = $db;
+
+        if (is_array($sqlQuery)) {
+            $this->rawSql = $sqlQuery["query"];
+            $this->rawSqlArgs = $sqlQuery["args"];
+        } else {
+            $this->rawSql = $sqlQuery;
+        }
+
         $this->sqlArray = $sqlArray;
         $this->nameArray = $nameArray;
         $this->emptyMsg = $emptyMsg;
@@ -32,6 +46,10 @@ abstract class Table {
         $this->action = method_exists($this, "printAction");
 
         if ($this->rowsPerPage !== -1) {
+            $this->needsAjax = true;
+        }
+
+        if ($this->needsAjax) {
             $this->checkAjax();
         }
     }
@@ -60,7 +78,8 @@ abstract class Table {
         <br />
         <div class="tableSwitcher" data-id="<?php echo $this->id; ?>"></div>
         <?php
-        if ($this->rowsPerPage !== -1) {
+
+        if ($this->needsAjax) {
             $this->printScript();
         }
     }
@@ -87,20 +106,27 @@ abstract class Table {
         Table::$jsprinted = true;
     }
 
-    protected function sqlQuery() {
-        return $this->sqlQuery;
+    protected function buildSqlQuery() {
+        $this->sqlQuery = $this->rawSql;
+        $this->sqlArgs = $this->rawSqlArgs;
     }
 
-    protected function printContent($page = 1, $ajax = false) {
-        global $DB;
-        $sql = $this->sqlQuery();
+    protected function printContent($page = NULL, $ajax = false) {
+        if ($page == NULL) {
+            $page = 1;
+        }
 
-        $this->rowCount = count($DB->query($sql));
+        $this->buildSqlQuery();
+
+        $this->rowCount = count($this->db->query($this->sqlQuery, $this->sqlArgs));
 
         if ($this->rowsPerPage !== -1) {
-            $sql .= " LIMIT " . ($this->rowsPerPage * ($page - 1)) . ", " . $this->rowsPerPage;
+            $this->sqlQuery .= " LIMIT ?, ?";
+            $this->sqlArgs[] = $this->rowsPerPage * ($page - 1);
+            $this->sqlArgs[] = $this->rowsPerPage;
         }
-        $answer = $DB->query($sql);
+
+        $answer = $this->db->query($this->sqlQuery, $this->sqlArgs);
         $pages = 0;
 
         if ($this->rowCount != 0) {
@@ -128,7 +154,7 @@ abstract class Table {
             }
         } else {
             $html .= "<tr>";
-            $length = $this->action === true ? count($this->sqlArray) + 1 : count($this->sqlArray);
+            $length = count($this->sqlArray) + ($this->action ? 1 : 0);
             $html .= "<td colspan='{$length}'><center>{$this->emptyMsg}</center></td>";
             $html .= "</tr>";
         }
