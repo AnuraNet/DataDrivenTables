@@ -1,8 +1,10 @@
-function setupSortable(table, sortables) {
+function setupSortable(tableId, sortables) {
+    var table = document.getElementById(tableId);
+    var all = JSON.parse(sortables);
     var data_id = table.querySelectorAll("th[data-id]");
     for (var i = 0; i < data_id.length; i++) {
         var thiz = data_id[i];
-        if (sortables.indexOf(thiz.dataset.id) !== -1) {
+        if (all.indexOf(thiz.dataset.id) !== -1) {
             thiz.addEventListener("click", function () {
                 var table = document.getElementById(this.dataset.table);
                 var obj = JSON.parse(table.dataset.additionalParameters);
