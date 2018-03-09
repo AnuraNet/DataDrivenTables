@@ -58,7 +58,7 @@ class FilterableTable extends SortableTable {
     }
 
     public function printTable() {
-        $html = "<div class='tableFilters' id='tableFilters{$this->id}'>";
+        $html = "<div class='tableFilters' data-id='{$this->id}'>";
         foreach ($this->parameters as $param) {
             $html .= $param->getHTML();
         }

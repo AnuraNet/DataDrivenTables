@@ -1,6 +1,6 @@
 function setupFilterable(tableId) {
     var table = document.getElementById(tableId);
-    var filters = document.getElementById("tableFilters" + tableId);
+    var filters = document.querySelector(".tableFilters[data-id='" + tableId+"']");
     var filters_input = filters.querySelectorAll("input");
     var filters_select = filters.querySelectorAll("select");
     for (var i = 0; i < filters_input.length; i++) {
