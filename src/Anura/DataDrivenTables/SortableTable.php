@@ -26,8 +26,8 @@ class SortableTable extends Table {
             $this->sortables = $sqlArray;
         }
 
-        $this->additionalScriptParameters['tableSortBy'] = $this->sortBy;
-        $this->additionalScriptParameters['tableSortDir'] = $this->sortDir;
+        $this->addAdditionalScriptParameter('tableSortBy', $this->sortBy);
+        $this->addAdditionalScriptParameter('tableSortDir', $this->sortDir);
 
         $this->needsAjax = true;
 
