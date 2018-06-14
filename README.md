@@ -1,6 +1,6 @@
-#DataDrivenTables#
+# DataDrivenTables
 
-##Basic usage##
+## Basic usage
 
 Create a very simple table:
 
@@ -16,21 +16,21 @@ This will create a table with three columns displaying the contents from the pro
 
 **Note**: The two column arrays (the 4th and 5th arguments) have to be the same length.
 
-###Database providers###
+### Database providers
 
 **TODO**
 
-##Constructor arguments##
+## Constructor arguments
 
 The constructor parameters are as follows: ``($id, $db, $sqlQuery, $sqlArray, $nameArray, $emptyMsg = "", $rowsPerPage = -1, $type = "")``
 
-###The `id` argument###
+### The `id` argument
 The `id` is a string that has to be a unique id on your HTML page. It is used to identify the table and to support multiple _DataDrivenTables_ on the same page.
 
-###The `db` argument###
+### The `db` argument
 The `db` has to be a valid and initialized `DatabaseProvider`.
 
-###The `sqlQuery` argument###
+### The `sqlQuery` argument
 
 The sql query used to retrieve the data.
 
@@ -41,23 +41,23 @@ The syntax is similar to prepared statements.
 Example:
 ``array("SELECT title, author, released FROM books WHERE released > ?", array(time()));``
 
-###The `sqlArray` argument###
+### The `sqlArray` argument
 
 This identifies the column names which result in columns of the HTML table.
 
-###The `nameArray` argument###
+### The `nameArray` argument
 
 This array contains the display names of the table columns.
 
 _Please note that the length of this array must be equal to the `sqlArray`!_
 
-###The `emptyMsg` argument###
+### The `emptyMsg` argument
 
 **Default**: `""`
 
 This message is shown when the query returned an empty response.
 
-###The `rowsPerPage` argument###
+### The `rowsPerPage` argument
 
 **Default**: `-1`
 
@@ -65,17 +65,17 @@ How many rows should be shown on one page. The page switching is completely hand
 
 To disable pages, use the default value of `-1`.
 
-###The `type` argument###
+### The `type` argument
 
 **Default**: `""`
 
 This argument allows to give a custom CSS class which will be applied to the table.
 
-##More possibilites: Extending the `Table` class##
+## More possibilites: Extending the `Table` class
 
-###Column methods###
+### Column methods
 
-####Action method####
+#### Action method
 
 If a method called `printAction` is declared in the extending class it will be called after each row's content was printed.
 The returned content will be printed in an additional column after the content columns.
@@ -83,12 +83,12 @@ The returned content will be printed in an additional column after the content c
 The `printAction` method will receive the content of the "action column" (default: _"id"_, defined in the `actionKey` as explained below),
 the complete associative array for the current column and the total row count as parameters.
 
-####Column named methods####
+#### Column named methods
 If a method exists in the extending class, which name is equal to a sql column (contained in the `sqlArray`), it is always executed
 for this specific table cell. The parameters are the value of the current cell, the complete associative array for the current column, the current row,
 the current page and the total row count.
 
-###Protected attributes###
+### Protected attributes
 
 **Note**: Most of the constructor arguments are applied directly to their respective attributes and won't be explained here.
 
