@@ -5,12 +5,17 @@ namespace Anura\DataDrivenTables;
 class SortableTable extends Table {
 
     protected $sortables = NULL;
-    protected $sortByDefault = "id";
+    protected $sortByDefault = NULL;
     protected $sortDirDefault = "ASC";
-    protected $sortBy;
-    protected $sortDir;
+    private $sortBy;
+    private $sortDir;
 
     public function __construct($id, $db, $sqlQuery, $sqlArray, $nameArray, $emptyMsg = "", $rowsPerPage = -1, $type = "") {
+
+        if ($this->sortByDefault == NULL) {
+            $this->sortByDefault = $sqlArray[0];
+        }
+
         $this->sortBy = $this->sortByDefault;
         $this->sortDir = $this->sortDirDefault;
 

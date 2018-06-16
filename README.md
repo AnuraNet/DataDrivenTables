@@ -106,3 +106,21 @@ The count query can be overwritten to improve performance.
 If this argument is not `NULL` (default) and the `$countQueryTemplate` still contains `$1`, the arguments given in the `sqlQuery` array will be used instead.
 
 - `$additionalScriptParameters`: This associative array has to be filled with GET parameters which are needed for the ajax requests to reach the PHP page where the table is constructed.
+
+## Using `SortableTable`s
+
+When using the `SortableTable` without changing any settings, the table can be sorted by all columns.
+By default, the table is sorted ascending by the first column of the `sqlArray`.
+
+### Protected attributes
+
+- `$sortByDefault`: The column name to sort by default.
+
+- `$sortDirDefaullt`: The default sort direction (can be `ASC` or `DESC`).
+
+- `$sortables`: An array containing all column names which are sortable (equal to `sqlArray` by default).
+
+
+## Maximum user interaction: Using `FilterableTable`s
+
+TODO
