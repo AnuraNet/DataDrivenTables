@@ -58,55 +58,55 @@ class Table {
     }
 
     public function printTable() {
-        ?>
-        <table class="table <?php echo $this->type; ?>" id="<?php echo $this->id; ?>" <?php echo $this->printTableData(); ?>>
-            <thead>
-                <tr>
-                    <?php
-                    foreach ($this->nameArray as $key => $column) {
-                        echo "<th data-id='{$this->sqlArray[$key]}'><div>{$column}</div></th>\n";
-                    }
-                    if ($this->action === true) {
-                        echo "<th></th>\n";
-                    }
-                    ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $this->printContent();
-                ?>
-            </tbody>
-        </table>
-        <br />
-        <div class="tableSwitcher" data-id="<?php echo $this->id; ?>"></div>
-        <?php
-
-        if ($this->needsAjax) {
-            $this->printScript();
-        }
+        echo $this->getTableHtml();
     }
 
-    protected function printTableData() {
+    public function getTableHtml() {
+        $html = "<table class='table{$this->type}' id='{$this->id}' {$this->getTableData()}>";
+        $html .= "<thead>";
+        $html .= "<tr>";
+        foreach ($this->nameArray as $key => $column) {
+            $html .= "<th data-id='{$this->sqlArray[$key]}'><div>{$column}</div></th>";
+        }
+        if ($this->action === true) {
+            $html .= "<th></th>";
+        }
+        $html .= "</tr>";
+        $html .= "</thead>";
+        $html .= "<tbody>";
+        $html .= $this->getContentHtml();
+        $html .= "</tbody>";
+        $html .= "</table>";
+        $html .= "<br />";
+        $html .= "<div class='tableSwitcher' data-id='{$this->id}'></div>";
+
+        if ($this->needsAjax) {
+            if (!Table::$jsprinted) {
+                $html .= $this->getScriptHtml();
+                Table::$jsprinted = true;
+            }
+            $html .= $this->getUpdateScriptHtml();
+        }
+        return $html;
+    }
+
+    protected function getTableData() {
         return " data-page='1' data-additional-parameters='" . json_encode($this->additionalScriptParameters) . "' data-content-page='//" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "' ";
     }
 
-    protected function printScript() {
-        $pages = 0;
-        if ($this->rowCount != 0) {
-            $pages = ceil($this->rowCount / $this->rowsPerPage);
-        }
-        if (!Table::$jsprinted) {
-        ?>
-            <script type="text/javascript">
-            <?php require "resources/Table.js"; ?>
-            </script>
-        <?php } ?>
-        <script type="text/javascript">
-            updateSwitcher("<?php echo $this->id; ?>", 1, <?php echo $pages; ?>, <?php echo $this->rowCount; ?>);
-        </script>
-        <?php
-        Table::$jsprinted = true;
+    public function getScriptHtml() {
+        $html = "<script type='text/javascript'>";
+        $html .= file_get_contents("resources/Table.js");
+        $html .= "</script>";
+        return $html;
+    }
+
+    public function getUpdateScriptHtml() {
+        $pages = ceil($this->rowCount / $this->rowsPerPage);
+        $html = "<script type='text/javascript'>";
+        $html .= "updateSwitcher(\"{$this->id}\", 1, {$pages}, {$this->rowCount});";
+        $html .= "</script>";
+        return $html;
     }
 
     protected function buildSqlQuery() {
@@ -114,7 +114,7 @@ class Table {
         $this->sqlArgs = $this->rawSqlArgs;
     }
 
-    protected function printContent($page = NULL, $ajax = false) {
+    public function getContentHtml($page = NULL, $ajax = false) {
         if ($page == NULL) {
             $page = 1;
         }
@@ -141,7 +141,7 @@ class Table {
         $html = "";
         if (!empty($answer)) {
             foreach ($answer as $key => $row) {
-                $html .= "<tr>\n";
+                $html .= "<tr>";
                 foreach ($this->sqlArray as $column) {
                     $html .= "<td>";
                     if (method_exists($this, $column)) {
@@ -151,12 +151,12 @@ class Table {
                     } else {
                         $html .= $row[$column];
                     }
-                    $html .= "</td>\n";
+                    $html .= "</td>";
                 }
                 if ($this->action === true) {
-                    $html .= "<td>{$this->printAction($row[$this->actionKey], $row, $this->rowCount)}</td>\n";
+                    $html .= "<td>{$this->printAction($row[$this->actionKey], $row, $this->rowCount)}</td>";
                 }
-                $html .= "</tr>\n";
+                $html .= "</tr>";
             }
         } else {
             $html .= "<tr>";
@@ -166,15 +166,15 @@ class Table {
         }
         if ($ajax) {
             header("Content-Type: application/json");
-            echo json_encode(array("html" => $html, "pages" => $pages, "records" => $this->rowCount));
+            return json_encode(array("html" => $html, "pages" => $pages, "records" => $this->rowCount));
         } else {
-            echo $html;
+            return $html;
         }
     }
 
     protected function checkAjax() {
         if (filter_has_var(INPUT_GET, $this->id)) {
-            $this->printContent(filter_input(INPUT_GET, "tablePage"), true);
+            echo $this->getContentHtml(filter_input(INPUT_GET, "tablePage"), true);
             exit;
         }
     }

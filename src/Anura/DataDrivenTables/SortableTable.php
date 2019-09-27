@@ -50,13 +50,19 @@ class SortableTable extends Table {
         array_push($this->sqlArgs, $this->sortBy, $this->sortDir, $this->sortByDefault, $this->sortDirDefault);
     }
 
-    protected function printScript() {
-        parent::printScript();
-        ?>
-        <script>
-            <?php require "resources/SortableTable.js"; ?>
-            setupSortable("<?php echo $this->id; ?>", "<?php echo json_encode($this->sortables); ?>");
-        </script>
-        <?php
+    public function getScriptHtml() {
+        $html = parent::getScriptHtml();
+        $html .= "<script type='text/javascript'>";
+        $html .= file_get_contents("resources/SortableTable.js");
+        $html .= "</script>";
+        return $html;
+    }
+
+    public function getUpdateScriptHtml() {
+        $sortablesJson = json_encode($this->sortables);
+        $html = parent::getUpdateScriptHtml();
+        $html .= "<script type='text/javascript'>";
+        $html .= "setupSortable(\"{$this->id}\", \"{$sortablesJson}\");";
+        $html .= "</script>";
     }
 }
