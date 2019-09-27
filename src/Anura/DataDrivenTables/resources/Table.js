@@ -25,7 +25,7 @@ function updateSwitcher(id, page, pages) {
     var html = "";
     if (pages > 1) {
         if (page - 1 > 0) {
-            html += "<a data-page='1'>&lt;&lt;</a>&nbsp;<a data-page='" + (page - 1) + "' class='tablePageLink'>&lt; Vorherige Seite</a>&nbsp;|";
+            html += "<a data-page='1' class='tablePageLink'>&lt;&lt;</a>&nbsp;<a data-page='" + (page - 1) + "' class='tablePageLink'>&lt; Vorherige Seite</a>&nbsp;|";
         }
         for (var i = page - 5; i <= page + 5; i++) {
             if (i > 0 && i <= pages) {
