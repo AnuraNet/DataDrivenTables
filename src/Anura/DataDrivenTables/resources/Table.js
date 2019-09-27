@@ -15,13 +15,13 @@ function updateTable(id, pagenr) {
     tableAjax(e.dataset.contentPage + "?" + id + "&tablePage=" + pagenr + additionalParameters).then((data) => {
         if (timestamps[id] === timestamp) {
             e.getElementsByTagName('tbody')[0].innerHTML = data.html;
-            updateSwitcher(id, parseInt(pagenr), parseInt(data.pages));
+            updateSwitcher(id, parseInt(pagenr), parseInt(data.pages), parseInt(data.records));
             e.dataset.page = pagenr;
         }
     }, () => {});
 }
 
-function updateSwitcher(id, page, pages) {
+function updateSwitcher(id, page, pages, records) {
     var html = "";
     if (pages > 1) {
         if (page > 1) {
@@ -41,6 +41,7 @@ function updateSwitcher(id, page, pages) {
         }
         html += "<br/>" + pages + " Seiten";
     }
+    html += records + " Datensätze";
     document.querySelector(".tableSwitcher[data-id='" + id + "']").innerHTML = html;
 }
 

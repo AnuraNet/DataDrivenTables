@@ -103,7 +103,7 @@ class Table {
             </script>
         <?php } ?>
         <script type="text/javascript">
-            updateSwitcher("<?php echo $this->id; ?>", 1, <?php echo $pages; ?>);
+            updateSwitcher("<?php echo $this->id; ?>", 1, <?php echo $pages; ?>, <?php echo $this->rowCount; ?>);
         </script>
         <?php
         Table::$jsprinted = true;
@@ -166,7 +166,7 @@ class Table {
         }
         if ($ajax) {
             header("Content-Type: application/json");
-            echo json_encode(array("html" => $html, "pages" => $pages));
+            echo json_encode(array("html" => $html, "pages" => $pages, "records" => $this->rowCount));
         } else {
             echo $html;
         }
