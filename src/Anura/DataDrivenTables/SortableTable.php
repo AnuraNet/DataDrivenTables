@@ -64,5 +64,6 @@ class SortableTable extends Table {
         $html .= "<script type='text/javascript'>";
         $html .= "setupSortable(\"{$this->id}\", \"{$sortablesJson}\");";
         $html .= "</script>";
+        return $html;
     }
 }
