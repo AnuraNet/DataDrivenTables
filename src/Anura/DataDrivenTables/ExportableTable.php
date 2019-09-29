@@ -24,20 +24,20 @@ class ExportableTable extends FilterableTable {
         parent::__construct($id, $sqlQuery, $sqlArray, $nameArray, $emptyMsg);
     }
 
-    public function printTable() {
-        echo "<div class='tableExport' data-id='{$this->id}'>"
-        . "<a data-export='CSV'>Export als CSV</a>&nbsp;<a data-export='PDF'>Export als PDF</a>"
-        . "</div>";
-        parent::printTable();
+    public function getTableHtml() {
+        $html = "<div class='tableExport' data-id='{$this->id}'>";
+        $html .= "<a data-export='CSV'>Export als CSV</a>&nbsp;<a data-export='PDF'>Export als PDF</a>";
+        $html .= "</div>";
+        $html .= parent::getTableHtml();
+        return $html;
     }
 
-    protected function printScript() {
-        ?>
-        <script>
-            <?php require "resources/ExportableTable.js"; ?>
-        </script>
-        <?php
-        parent::printScript();
+    public function getScriptHtml() {
+        $html = parent::getScriptHtml();
+        $html .= "<script type='text/javascript'>";
+        $html .= file_get_contents("resources/ExportableTable.js");
+        $html .= "</script>";
+        return $html;
     }
 
     protected function checkAjax() {

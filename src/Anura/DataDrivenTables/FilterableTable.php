@@ -57,23 +57,30 @@ class FilterableTable extends SortableTable {
         return $query;
     }
 
-    public function printTable() {
+    public function getTableHtml() {
         $html = "<div class='tableFilters' data-id='{$this->id}'>";
         foreach ($this->parameters as $param) {
             $html .= $param->getHTML();
         }
-        echo "{$html}</div>";
-        parent::printTable();
+        $html .= "</div>";
+        $html .= parent::getTableHtml();
+        return $html;
     }
 
-    protected function printScript() {
-        parent::printScript();
-        ?>
-        <script>
-            <?php require "resources/FilterableTable.js"; ?>
-            setupFilterable("<?php echo $this->id; ?>");
-        </script>
-        <?php
+    public function getScriptHtml() {
+        $html = parent::getScriptHtml();
+        $html .= "<script type='text/javascript'>";
+        $html .= file_get_contents("resources/FilterableTable.js");
+        $html .= "</script>";
+        return $html;
+    }
+
+    public function getUpdateScriptHtml() {
+        $html = parent::getUpdateScriptHtml();
+        $html .= "<script type='text/javascript'>";
+        $html .= "setupFilterable(\"{$this->id}\");";
+        $html .= "</script>";
+        return $html;
     }
 
 }
