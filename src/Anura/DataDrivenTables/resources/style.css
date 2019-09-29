@@ -32,9 +32,16 @@ table.wide {
 }
 .tableSwitcher {
     text-align:center;
+    margin-top: 1em;
 }
 .tableSwitcher a {
     cursor:pointer;
+}
+.tableFilters {
+    margin-bottom: 1em;
+}
+.tableExport {
+    margin-bottom: 1em;
 }
 .clickCursor {
     cursor:pointer;

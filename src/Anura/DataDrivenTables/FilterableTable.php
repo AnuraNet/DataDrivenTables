@@ -62,7 +62,7 @@ class FilterableTable extends SortableTable {
         foreach ($this->parameters as $param) {
             $html .= $param->getHTML();
         }
-        echo "{$html}</div><br/>";
+        echo "{$html}</div>";
         parent::printTable();
     }
 

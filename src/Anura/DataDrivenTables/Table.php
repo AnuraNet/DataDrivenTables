@@ -77,7 +77,6 @@ class Table {
         $html .= $this->getContentHtml();
         $html .= "</tbody>";
         $html .= "</table>";
-        $html .= "<br />";
         $html .= "<div class='tableSwitcher' data-id='{$this->id}'></div>";
 
         if ($this->needsAjax) {

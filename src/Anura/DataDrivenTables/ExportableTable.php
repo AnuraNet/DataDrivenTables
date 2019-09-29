@@ -27,7 +27,7 @@ class ExportableTable extends FilterableTable {
     public function printTable() {
         echo "<div class='tableExport' data-id='{$this->id}'>"
         . "<a data-export='CSV'>Export als CSV</a>&nbsp;<a data-export='PDF'>Export als PDF</a>"
-        . "<br/><br/></div>";
+        . "</div>";
         parent::printTable();
     }
 
