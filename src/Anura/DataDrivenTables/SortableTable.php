@@ -45,7 +45,7 @@ class SortableTable extends Table {
         $this->addOrderClause();
     }
 
-    protected function getOrderClause() {
+    protected function addOrderClause() {
         $this->sqlQuery .= " ORDER BY ? ?, ? ?";
         array_push($this->sqlArgs, $this->sortBy, $this->sortDir, $this->sortByDefault, $this->sortDirDefault);
     }
