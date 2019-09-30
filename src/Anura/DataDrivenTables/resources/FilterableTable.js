@@ -5,6 +5,7 @@ function setupFilterable(tableId) {
     var filters_select = filters.querySelectorAll("select");
     for (var i = 0; i < filters_input.length; i++) {
         filters_input[i].addEventListener("input", function () {
+            table.dataset.page = 1;
             var obj = JSON.parse(table.dataset.additionalParameters);
             if (this.type === "checkbox") {
                 var parent = this.parentElement;
@@ -22,6 +23,7 @@ function setupFilterable(tableId) {
     }
     for (var i = 0; i < filters_select.length; i++) {
         filters_select[i].addEventListener("change", function () {
+            table.dataset.page = 1;
             var obj = JSON.parse(table.dataset.additionalParameters);
             obj["tableFilter-" + this.dataset.id] = this.value;
             table.dataset.additionalParameters = JSON.stringify(obj);
