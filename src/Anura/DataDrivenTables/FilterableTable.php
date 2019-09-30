@@ -262,7 +262,8 @@ class FilterableParam {
                 }
                 $html .= "&nbsp;<select id='{$this->table}-{$this->id}' data-id='{$this->table}-{$this->id}'>";
                 foreach ($this->params as $key => $value) {
-                    $html .= "<option value='{$key}' " . ($this->default === $key ? "selected" : "") . ">{$value}</option>";
+                    $d = is_numeric($this->default) ? intval($this->default) : $this->default;
+                    $html .= "<option value='{$key}' " . ($d === $key ? "selected" : "") . ">{$value}</option>";
                 }
                 $html .= "</select>&nbsp;&nbsp;";
                 break;
