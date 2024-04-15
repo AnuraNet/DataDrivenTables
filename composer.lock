@@ -4,24 +4,24 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ed3215cde12b4198a39ebd2f312a73f7",
+    "content-hash": "ebbdd952c22bd687e6e839d893e86b1e",
     "packages": [
         {
             "name": "tecnickcom/tcpdf",
-            "version": "6.2.22",
+            "version": "6.7.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "ac6e92fccc7d9383dfd787056831349621b1aca2"
+                "reference": "d4adef47ca21c90e6483d59dcb9e5b1023696937"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/ac6e92fccc7d9383dfd787056831349621b1aca2",
-                "reference": "ac6e92fccc7d9383dfd787056831349621b1aca2",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/d4adef47ca21c90e6483d59dcb9e5b1023696937",
+                "reference": "d4adef47ca21c90e6483d59dcb9e5b1023696937",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=5.5.0"
             },
             "type": "library",
             "autoload": {
@@ -46,7 +46,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL-3.0"
+                "LGPL-3.0-or-later"
             ],
             "authors": [
                 {
@@ -67,9 +67,16 @@
                 "qrcode"
             ],
             "support": {
-                "source": "https://github.com/tecnickcom/TCPDF/tree/master"
+                "issues": "https://github.com/tecnickcom/TCPDF/issues",
+                "source": "https://github.com/tecnickcom/TCPDF/tree/6.7.4"
             },
-            "time": "2018-09-14T15:26:29+00:00"
+            "funding": [
+                {
+                    "url": "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&currency_code=GBP&business=paypal@tecnick.com&item_name=donation%20for%20tcpdf%20project",
+                    "type": "custom"
+                }
+            ],
+            "time": "2024-03-25T23:56:24+00:00"
         }
     ],
     "packages-dev": [],
@@ -80,5 +87,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
