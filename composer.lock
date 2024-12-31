@@ -4,24 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ebbdd952c22bd687e6e839d893e86b1e",
+    "content-hash": "79355ce561bb0ebb0ed7955444ea5f79",
     "packages": [
         {
             "name": "tecnickcom/tcpdf",
-            "version": "6.7.4",
+            "version": "6.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "d4adef47ca21c90e6483d59dcb9e5b1023696937"
+                "reference": "14ffa0e308f5634aa2489568b4b90b24073b6731"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/d4adef47ca21c90e6483d59dcb9e5b1023696937",
-                "reference": "d4adef47ca21c90e6483d59dcb9e5b1023696937",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/14ffa0e308f5634aa2489568b4b90b24073b6731",
+                "reference": "14ffa0e308f5634aa2489568b4b90b24073b6731",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.5.0"
+                "ext-curl": "*",
+                "php": ">=7.1.0"
             },
             "type": "library",
             "autoload": {
@@ -68,7 +69,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tecnickcom/TCPDF/issues",
-                "source": "https://github.com/tecnickcom/TCPDF/tree/6.7.4"
+                "source": "https://github.com/tecnickcom/TCPDF/tree/6.8.0"
             },
             "funding": [
                 {
@@ -76,7 +77,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2024-03-25T23:56:24+00:00"
+            "time": "2024-12-23T13:34:57+00:00"
         }
     ],
     "packages-dev": [],
